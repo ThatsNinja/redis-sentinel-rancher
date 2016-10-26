@@ -1,12 +1,12 @@
 pharos-redis:
   image: thatsninja/pharos-redis:latest
   ports:
-   - "6379"
+    - "6379"
   labels:
     io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
     io.rancher.sidekicks: pharos-redis-data, pharos-sentinel
   volumes_from:
-   - pharos-redis-data
+    -  pharos-redis-data
 pharos-sentinel:
   image: thatsninja/pharos-sentinel:latest
   ports:
@@ -23,3 +23,17 @@ pharos-redis-data:
   stdin_open: true
   volumes:
     - /data
+redis-lb:
+  image: thatsninja/pharos-redis-lb:latest
+  ports:
+    - "6379:6379/tcp"
+  tty: true
+  labels:
+    io.rancher.sidekicks: redis-lb-conf
+  volumes_from:
+    - redis-lb-conf
+redis-lb-conf:
+  image: thatsninja/pharos-redis-lb:latest
+  command: /bin/bash -c "/confd --backend rancher --prefix /2015-07-25 --log-level debug"
+  volumes:
+    - /etc/haproxy

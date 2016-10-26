@@ -1,0 +1,21 @@
+defaults
+ mode tcp
+ timeout connect 5s
+ timeout client  4m
+ timeout server  4m
+
+frontend haproxy
+ bind 0.0.0.0:6379
+ default_backend redis
+
+backend redis
+ mode tcp
+ option tcp-check
+ tcp-check send PING\r\n
+ tcp-check expect string +PONG
+ tcp-check send info\ replication\r\n
+ tcp-check expect string role:master
+ tcp-check send QUIT\r\n
+ tcp-check expect string +OK
+ {{range ls "/services/pharos-redis/containers"}}{{ $containerName := getv (printf "/services/pharos-redis/containers/%s" .)}}
+ server {{$containerName}} {{getv (printf "/containers/%s/primary_ip" $containerName)}}:6379 maxconn 1024 check inter 1s{{end}}
