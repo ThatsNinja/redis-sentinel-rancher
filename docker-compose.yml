@@ -1,0 +1,25 @@
+pharos-redis:
+  image: thatsninja/pharos-redis:latest
+  ports:
+   - "6379"
+  labels:
+    io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+    io.rancher.sidekicks: pharos-redis-data, pharos-sentinel
+  volumes_from:
+   - pharos-redis-data
+pharos-sentinel:
+  image: thatsninja/pharos-sentinel:latest
+  ports:
+    - "26379"
+  labels:
+    io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+  depends_on:
+    - pharos-redis
+pharos-redis-data:
+  tty: true
+  command:
+    - cat
+  image: thatsninja/pharos-redis:latest
+  stdin_open: true
+  volumes:
+    - /data
