@@ -19,7 +19,7 @@ echo "port=$port"
 sed -i s/%port%/$port/g /usr/local/etc/redis/redis.conf
 sed -i s/%my_ip%/$my_ip/g /usr/local/etc/redis/redis.conf
 
-if [ "$my_ip" -ne "$master_ip" ]
+if [ "$my_ip" != "$master_ip" ]
 then
         echo "slaveof $master_ip $port" >> /usr/local/etc/redis/redis.conf
 fi
