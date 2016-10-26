@@ -9,7 +9,7 @@ stack_name=`curl -s http://rancher-metadata/2015-12-19/self/stack/name`
 sentinel_port=`curl -s http://rancher-metadata/2015-12-19/self/container/ports/0| sed  "s/.*:\([0-9]\{3,6\}\)\(\/tcp\|\/http\)\?/\1/g"`
 redis_port=`curl -s http://rancher-metadata/2015-12-19/services/pharos-redis/ports/0| sed  "s/.*:\([0-9]\{3,6\}\)\(\/tcp\|\/http\)\?/\1/g"`
 my_ip=`echo $(curl -s http://rancher-metadata/2015-12-19/self/container/primary_ip)`
-master_ip=$(leader_ip $stack_name "redis")
+master_ip=$(leader_ip $stack_name "pharos-redis")
 
 sed -i s/%sentinel_port%/$sentinel_port/g /etc/redis/sentinel.conf
 sed -i s/%redis_port%/$redis_port/g /etc/redis/sentinel.conf
