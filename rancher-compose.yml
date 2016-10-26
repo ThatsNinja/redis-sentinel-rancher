@@ -1,2 +1,4 @@
 pharos-redis:
   global: true
+redis-lb:
+  global: true
